@@ -16,6 +16,7 @@ import Home from "./Pages/Home";
 import Photos from "./Pages/Photos";
 import Videos from "./Pages/Videos";
 import Trips from "./Pages/Trips";
+import AnimatedBackground from "./Component/AnimatedBackground";
 
 
 
@@ -25,6 +26,8 @@ function App() {
 
       {/* Navbar visible on every page */}
       <Navbar />
+
+      <AnimatedBackground />
 
       <Routes>
 
