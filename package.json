@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "homepage": "https://github.com/Kashish9717/Album",
+=======
+    "homepage": "https://github.com/Kashish9717/MyAlbum",
+>>>>>>> 61d9d2e (aa)
     "name": "album",
     "private": true,
     "version": "0.0.0",
