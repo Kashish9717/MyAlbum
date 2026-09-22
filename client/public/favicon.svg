@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#C86D51"/>
+  <!-- Book spine -->
+  <rect x="4" y="4" width="4" height="24" rx="1.5" fill="#A8543B"/>
+  <rect x="8" y="4" width="20" height="24" rx="2" fill="#FAF6ED"/>
+  <!-- Washi tape on top -->
+  <rect x="13" y="2" width="10" height="4" rx="1" fill="#D99B4B" opacity="0.85" transform="rotate(-3 18 4)"/>
+  <!-- Heart Icon inside album -->
+  <path d="M18 12.5C16.8 11.2 14.8 11.2 13.6 12.4C12.4 13.6 12.4 15.6 13.6 16.8L18 21.2L22.4 16.8C23.6 15.6 23.6 13.6 22.4 12.4C21.2 11.2 19.2 11.2 18 12.5Z" fill="#C86D51"/>
+</svg>
