@@ -28,9 +28,27 @@ connectDB();
 app.use(helmet({
   crossOriginResourcePolicy: false, // Allow cross-origin images/videos
 }));
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, postman, curl)
+      if (!origin) return callback(null, true);
+
+      if (
+        allowedOrigins.some((allowed) => allowed.trim().replace(/\/+$/, '') === origin) ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive origin with credentials support
+    },
     credentials: true,
   })
 );
