@@ -225,6 +225,13 @@ export const resetPassword = async (req, res) => {
     sendTokenResponse(user, 200, res);
   } catch (error) {
     console.error('Reset password error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to reset password',
+    });
+  }
+};
+
 // @desc    Get currently logged in user
 // @route   GET /api/auth/me
 // @access  Private
