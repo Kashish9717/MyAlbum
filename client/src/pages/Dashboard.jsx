@@ -19,6 +19,7 @@ import {
   Shield,
 } from '../components/Icons';
 import { CollectionModal } from '../components/CollectionModal';
+import { DailyThoughtsSection } from '../components/DailyThoughtsSection';
 
 const THEME_ICONS = {
   default: Sparkles,
@@ -41,7 +42,9 @@ export const Dashboard = () => {
   const navigate = useNavigate();
 
   const [collections, setCollections] = useState([]);
-  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'my' | 'shared'
+  const [personalNotes, setPersonalNotes] = useState([]);
+  const [personalNotesLoading, setPersonalNotesLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'my' | 'shared' | 'thoughts'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -68,9 +71,65 @@ export const Dashboard = () => {
     }
   };
 
+  const fetchPersonalNotes = async () => {
+    try {
+      setPersonalNotesLoading(true);
+      const res = await api.get('/personal-notes');
+      if (res.data?.success) {
+        setPersonalNotes(res.data.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch daily thoughts:', err);
+    } finally {
+      setPersonalNotesLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCollections();
+    fetchPersonalNotes();
   }, []);
+
+  // Personal Notes Handlers
+  const handleCreatePersonalNote = async (noteData) => {
+    try {
+      const res = await api.post('/personal-notes', noteData);
+      if (res.data?.success) {
+        setPersonalNotes((prev) => [res.data.data, ...prev]);
+      }
+    } catch (err) {
+      console.error('Failed to create daily thought:', err);
+      alert(err.response?.data?.message || 'Failed to save thought.');
+    }
+  };
+
+  const handleUpdatePersonalNote = async (noteId, updateData) => {
+    try {
+      // Optimistic update
+      setPersonalNotes((prev) =>
+        prev.map((n) => (n._id === noteId ? { ...n, ...updateData } : n))
+      );
+      const res = await api.patch(`/personal-notes/${noteId}`, updateData);
+      if (res.data?.success) {
+        setPersonalNotes((prev) =>
+          prev.map((n) => (n._id === noteId ? res.data.data : n))
+        );
+      }
+    } catch (err) {
+      console.error('Failed to update thought:', err);
+      fetchPersonalNotes();
+    }
+  };
+
+  const handleDeletePersonalNote = async (noteId) => {
+    try {
+      setPersonalNotes((prev) => prev.filter((n) => n._id !== noteId));
+      await api.delete(`/personal-notes/${noteId}`);
+    } catch (err) {
+      console.error('Failed to delete thought:', err);
+      fetchPersonalNotes();
+    }
+  };
 
   // Close card menu on window click
   useEffect(() => {
@@ -231,11 +290,11 @@ export const Dashboard = () => {
           </button>
         </div>
 
-        {/* Filter Tabs (All / My Collections / Shared with Me) */}
-        <div className="flex items-center gap-2 mb-8 border-b border-kraft/40 pb-3">
+        {/* Filter Tabs (All / My Collections / Shared with Me / Daily Thoughts) */}
+        <div className="flex items-center gap-2 mb-8 border-b border-kraft/40 pb-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'all'
                 ? 'bg-ink text-paper shadow-xs'
                 : 'text-ink-muted hover:text-ink hover:bg-white/60'
@@ -245,7 +304,7 @@ export const Dashboard = () => {
           </button>
           <button
             onClick={() => setActiveTab('my')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'my'
                 ? 'bg-ink text-paper shadow-xs'
                 : 'text-ink-muted hover:text-ink hover:bg-white/60'
@@ -255,7 +314,7 @@ export const Dashboard = () => {
           </button>
           <button
             onClick={() => setActiveTab('shared')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'shared'
                 ? 'bg-ink text-paper shadow-xs'
                 : 'text-ink-muted hover:text-ink hover:bg-white/60'
@@ -263,221 +322,244 @@ export const Dashboard = () => {
           >
             Shared with Me ({sharedCollections.length})
           </button>
+          <button
+            onClick={() => setActiveTab('thoughts')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === 'thoughts'
+                ? 'bg-accent-terracotta text-white shadow-xs'
+                : 'text-accent-terracotta bg-amber-50 hover:bg-amber-100/70 border border-amber-200/60'
+            }`}
+          >
+            <span>✨</span>
+            <span>Daily Thoughts ({personalNotes.length})</span>
+          </button>
         </div>
 
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl mb-6 font-medium">
-            {error}
-          </div>
-        )}
-
-        {/* Loading Skeleton */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="h-64 rounded-2xl bg-white/40 border border-kraft/40 animate-pulse flex flex-col justify-between p-6"
-              >
-                <div className="w-24 h-4 bg-kraft/30 rounded" />
-                <div className="w-3/4 h-8 bg-kraft/40 rounded" />
-                <div className="w-1/2 h-4 bg-kraft/20 rounded" />
-              </div>
-            ))}
-          </div>
-        ) : displayedCollections.length === 0 ? (
-          /* Empty State */
-          <div className="border-2 border-dashed border-kraft rounded-3xl p-12 flex flex-col items-center justify-center text-center bg-white/40 min-h-[300px]">
-            <div className="w-16 h-16 rounded-full bg-paper-dark flex items-center justify-center text-accent-ochre mb-4 paper-shadow">
-              <BookOpen className="w-8 h-8" />
-            </div>
-            <h3 className="font-bold text-xl text-ink">
-              {activeTab === 'shared'
-                ? 'No Shared Albums Yet'
-                : 'No Scrapbook Albums Yet'}
-            </h3>
-            <p className="text-sm text-ink-muted max-w-sm mt-2 mb-6">
-              {activeTab === 'shared'
-                ? 'When someone invites you to their collection, it will appear right here!'
-                : 'Create your very first themed album for travels, friends, personal milestones, or custom memories!'}
-            </p>
-            {activeTab !== 'shared' && (
-              <button
-                onClick={openCreateModal}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-terracotta hover:bg-accent-terracotta/90 text-white rounded-xl shadow-xs text-sm font-medium transition-all cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Create Your First Album</span>
-              </button>
-            )}
-          </div>
+        {activeTab === 'thoughts' ? (
+          <DailyThoughtsSection
+            notes={personalNotes}
+            loading={personalNotesLoading}
+            onCreateNote={handleCreatePersonalNote}
+            onUpdateNote={handleUpdatePersonalNote}
+            onDeleteNote={handleDeletePersonalNote}
+          />
         ) : (
-          /* Collections Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayedCollections.map((col, index) => {
-              const ThemeIcon = THEME_ICONS[col.theme] || THEME_ICONS.default;
-              const textureClass =
-                TEXTURE_CLASSES[col.coverStyle?.texture] || 'bg-paper-texture';
-              const bgColor = col.coverStyle?.color || '#F5EFEB';
-              const isOwner =
-                (col.ownerId?._id || col.ownerId) === user?._id ||
-                col.userRole === 'owner';
-              const role = col.userRole || (isOwner ? 'owner' : 'viewer');
+          <>
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl mb-6 font-medium">
+                {error}
+              </div>
+            )}
 
-              const rotationAngle =
-                index % 3 === 0 ? -1 : index % 3 === 1 ? 1 : -0.5;
+            {/* Loading Skeleton */}
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className="h-64 rounded-2xl bg-white/40 border border-kraft/40 animate-pulse flex flex-col justify-between p-6"
+                  >
+                    <div className="w-24 h-4 bg-kraft/30 rounded" />
+                    <div className="w-3/4 h-8 bg-kraft/40 rounded" />
+                    <div className="w-1/2 h-4 bg-kraft/20 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : displayedCollections.length === 0 ? (
+              /* Empty State */
+              <div className="border-2 border-dashed border-kraft rounded-3xl p-12 flex flex-col items-center justify-center text-center bg-white/40 min-h-[300px]">
+                <div className="w-16 h-16 rounded-full bg-paper-dark flex items-center justify-center text-accent-ochre mb-4 paper-shadow">
+                  <BookOpen className="w-8 h-8" />
+                </div>
+                <h3 className="font-bold text-xl text-ink">
+                  {activeTab === 'shared'
+                    ? 'No Shared Albums Yet'
+                    : 'No Scrapbook Albums Yet'}
+                </h3>
+                <p className="text-sm text-ink-muted max-w-sm mt-2 mb-6">
+                  {activeTab === 'shared'
+                    ? 'When someone invites you to their collection, it will appear right here!'
+                    : 'Create your very first themed album for travels, friends, personal milestones, or custom memories!'}
+                </p>
+                {activeTab !== 'shared' && (
+                  <button
+                    onClick={openCreateModal}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-terracotta hover:bg-accent-terracotta/90 text-white rounded-xl shadow-xs text-sm font-medium transition-all cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Create Your First Album</span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              /* Collections Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {displayedCollections.map((col, index) => {
+                  const ThemeIcon = THEME_ICONS[col.theme] || THEME_ICONS.default;
+                  const textureClass =
+                    TEXTURE_CLASSES[col.coverStyle?.texture] || 'bg-paper-texture';
+                  const bgColor = col.coverStyle?.color || '#F5EFEB';
+                  const isOwner =
+                    (col.ownerId?._id || col.ownerId) === user?._id ||
+                    col.userRole === 'owner';
+                  const role = col.userRole || (isOwner ? 'owner' : 'viewer');
 
-              const hasCoverImg = Boolean(col.coverStyle?.imageUrl);
+                  const rotationAngle =
+                    index % 3 === 0 ? -1 : index % 3 === 1 ? 1 : -0.5;
 
-              return (
-                <div
-                  key={col._id}
-                  onClick={() => navigate(`/collection/${col._id}`)}
-                  style={{
-                    backgroundColor: bgColor,
-                    transform: `rotate(${rotationAngle}deg)`,
-                  }}
-                  className={`group relative rounded-2xl rounded-l-xs p-6 border border-kraft/70 paper-shadow album-spine flex flex-col justify-between min-h-[250px] cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:paper-shadow-lg hover:rotate-0 overflow-hidden ${textureClass}`}
-                >
-                  {/* Background Cover Photo if set */}
-                  {hasCoverImg && (
-                    <>
-                      <img
-                        src={col.coverStyle.imageUrl}
-                        alt={col.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 backdrop-blur-[0.5px]" />
-                    </>
-                  )}
+                  const hasCoverImg = Boolean(col.coverStyle?.imageUrl);
 
-                  <div className="washi-tape" />
-
-                  {/* Album Header */}
-                  <div className="flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
-                          hasCoverImg
-                            ? 'bg-white/20 text-white backdrop-blur-md border border-white/20'
-                            : 'bg-white/70 backdrop-blur-xs border border-black/5 text-ink'
-                        }`}
-                      >
-                        <ThemeIcon
-                          className={`w-3.5 h-3.5 ${
-                            hasCoverImg ? 'text-amber-300' : 'text-accent-terracotta'
-                          }`}
-                        />
-                        {col.theme}
-                      </span>
-
-                      {!isOwner && (
-                        <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            hasCoverImg
-                              ? 'bg-white/20 text-white backdrop-blur-xs border border-white/10'
-                              : 'bg-accent-sage/20 border border-accent-sage/40 text-accent-sage'
-                          }`}
-                        >
-                          <Users className="w-3 h-3" />
-                          <span>{role}</span>
-                        </span>
+                  return (
+                    <div
+                      key={col._id}
+                      onClick={() => navigate(`/collection/${col._id}`)}
+                      style={{
+                        backgroundColor: bgColor,
+                        transform: `rotate(${rotationAngle}deg)`,
+                      }}
+                      className={`group relative rounded-2xl rounded-l-xs p-6 border border-kraft/70 paper-shadow album-spine flex flex-col justify-between min-h-[250px] cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:paper-shadow-lg hover:rotate-0 overflow-hidden ${textureClass}`}
+                    >
+                      {/* Background Cover Photo if set */}
+                      {hasCoverImg && (
+                        <>
+                          <img
+                            src={col.coverStyle.imageUrl}
+                            alt={col.title}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 backdrop-blur-[0.5px]" />
+                        </>
                       )}
-                    </div>
 
-                    {/* Owner/Admin Action Dropdown */}
-                    {(isOwner || role === 'admin') && (
-                      <div
-                        className="relative"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <button
-                          onClick={() =>
-                            setActiveMenuId(
-                              activeMenuId === col._id ? null : col._id
-                            )
-                          }
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                            hasCoverImg
-                              ? 'text-white/80 hover:text-white hover:bg-white/20'
-                              : 'text-ink/70 hover:text-ink hover:bg-white/60'
-                          }`}
-                          title="Options"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
+                      <div className="washi-tape" />
 
-                        {activeMenuId === col._id && (
-                          <div className="absolute right-0 mt-1 w-36 bg-white border border-kraft rounded-xl shadow-lg py-1 z-30 animate-in fade-in zoom-in-95 duration-150">
-                            <button
-                              onClick={(e) => openEditModal(e, col)}
-                              className="w-full px-3 py-2 text-left text-xs font-medium text-ink hover:bg-paper-warm flex items-center gap-2 cursor-pointer"
+                      {/* Album Header */}
+                      <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
+                              hasCoverImg
+                                ? 'bg-white/20 text-white backdrop-blur-md border border-white/20'
+                                : 'bg-white/70 backdrop-blur-xs border border-black/5 text-ink'
+                            }`}
+                          >
+                            <ThemeIcon
+                              className={`w-3.5 h-3.5 ${
+                                hasCoverImg ? 'text-amber-300' : 'text-accent-terracotta'
+                              }`}
+                            />
+                            {col.theme}
+                          </span>
+
+                          {!isOwner && (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              hasCoverImg
+                                ? 'bg-white/20 text-white backdrop-blur-xs border border-white/10'
+                                : 'bg-accent-sage/20 border border-accent-sage/40 text-accent-sage'
+                            }`}
                             >
-                              <Edit className="w-3.5 h-3.5 text-ink-muted" />
-                              <span>Edit Album</span>
+                              <Users className="w-3 h-3" />
+                              <span>{role}</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Owner/Admin Action Dropdown */}
+                        {(isOwner || role === 'admin') && (
+                          <div
+                            className="relative"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={() =>
+                                setActiveMenuId(
+                                  activeMenuId === col._id ? null : col._id
+                                )
+                              }
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                hasCoverImg
+                                  ? 'text-white/80 hover:text-white hover:bg-white/20'
+                                  : 'text-ink/70 hover:text-ink hover:bg-white/60'
+                              }`}
+                              title="Options"
+                            >
+                              <MoreVertical className="w-4 h-4" />
                             </button>
-                            {isOwner && (
-                              <button
-                                onClick={(e) => handleDelete(e, col._id)}
-                                className="w-full px-3 py-2 text-left text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                                <span>Delete</span>
-                              </button>
+
+                            {activeMenuId === col._id && (
+                              <div className="absolute right-0 mt-1 w-36 bg-white border border-kraft rounded-xl shadow-lg py-1 z-30 animate-in fade-in zoom-in-95 duration-150">
+                                <button
+                                  onClick={(e) => openEditModal(e, col)}
+                                  className="w-full px-3 py-2 text-left text-xs font-medium text-ink hover:bg-paper-warm flex items-center gap-2 cursor-pointer"
+                                >
+                                  <Edit className="w-3.5 h-3.5 text-ink-muted" />
+                                  <span>Edit Album</span>
+                                </button>
+                                {isOwner && (
+                                  <button
+                                    onClick={(e) => handleDelete(e, col._id)}
+                                    className="w-full px-3 py-2 text-left text-xs font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span>Delete</span>
+                                  </button>
+                                )}
+                              </div>
                             )}
                           </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Album Title */}
-                  <div className="my-4 relative z-10">
-                    <h2
-                      className={`font-handwriting text-3xl font-bold leading-tight line-clamp-2 transition-colors ${
-                        hasCoverImg
-                          ? 'text-white drop-shadow-md group-hover:text-amber-200'
-                          : 'text-ink drop-shadow-xs group-hover:text-accent-terracotta'
-                      }`}
-                    >
-                      {col.title}
-                    </h2>
-                    {col.description && (
-                      <p
-                        className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${
-                          hasCoverImg ? 'text-white/80' : 'text-ink-muted'
+                      {/* Album Title */}
+                      <div className="my-4 relative z-10">
+                        <h2
+                          className={`font-handwriting text-3xl font-bold leading-tight line-clamp-2 transition-colors ${
+                            hasCoverImg
+                              ? 'text-white drop-shadow-md group-hover:text-amber-200'
+                              : 'text-ink drop-shadow-xs group-hover:text-accent-terracotta'
+                          }`}
+                        >
+                          {col.title}
+                        </h2>
+                        {col.description && (
+                          <p
+                            className={`text-xs mt-1.5 line-clamp-2 leading-relaxed ${
+                              hasCoverImg ? 'text-white/80' : 'text-ink-muted'
+                            }`}
+                          >
+                            {col.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Album Footer */}
+                      <div
+                        className={`flex items-center justify-between text-[11px] pt-3 relative z-10 border-t ${
+                          hasCoverImg
+                            ? 'text-white/70 border-white/15'
+                            : 'text-ink-muted border-black/5'
                         }`}
                       >
-                        {col.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Album Footer */}
-                  <div
-                    className={`flex items-center justify-between text-[11px] pt-3 relative z-10 border-t ${
-                      hasCoverImg
-                        ? 'text-white/70 border-white/15'
-                        : 'text-ink-muted border-black/5'
-                    }`}
-                  >
-                    <span>
-                      {isOwner
-                        ? 'By You'
-                        : `By ${col.ownerId?.name || 'Friend'}`}
-                    </span>
-                    <span
-                      className={`font-medium group-hover:underline ${
-                        hasCoverImg ? 'text-white' : 'text-ink'
-                      }`}
-                    >
-                      Open Album &rarr;
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                        <span>
+                          {isOwner
+                            ? 'By You'
+                            : `By ${col.ownerId?.name || 'Friend'}`}
+                        </span>
+                        <span
+                          className={`font-medium group-hover:underline ${
+                            hasCoverImg ? 'text-white' : 'text-ink'
+                          }`}
+                        >
+                          Open Album &rarr;
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </main>
 

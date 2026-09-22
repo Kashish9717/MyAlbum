@@ -12,6 +12,7 @@ import mediaRoutes from './routes/mediaRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
 import inviteRoutes from './routes/inviteRoutes.js';
 import socialRoutes from './routes/socialRoutes.js';
+import personalNoteRoutes from './routes/personalNoteRoutes.js';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.use('/api', mediaRoutes);
 app.use('/api', noteRoutes);
 app.use('/api', inviteRoutes);
 app.use('/api', socialRoutes);
+app.use('/api/personal-notes', personalNoteRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
