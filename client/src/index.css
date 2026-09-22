@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-handwriting: 'Caveat', 'Patrick Hand', cursive;
+  --font-sketch: 'Patrick Hand', cursive;
+
+  --color-paper: #FAF6ED;
+  --color-paper-warm: #F5EFEB;
+  --color-paper-dark: #EFE6D8;
+  --color-kraft: #D9C7A3;
+  --color-kraft-dark: #C2AF87;
+  --color-kraft-deep: #8C7355;
+  
+  --color-ink: #2C2623;
+  --color-ink-muted: #6B625B;
+  --color-ink-light: #9B9188;
+
+  --color-washi-pink: #F7D1D5;
+  --color-washi-yellow: #FDE8B3;
+  --color-washi-blue: #CDE3E7;
+  --color-washi-green: #D2E3C8;
+  --color-washi-lavender: #E0D4E7;
+  
+  --color-accent-terracotta: #C86D51;
+  --color-accent-sage: #8A9A86;
+  --color-accent-ochre: #D99B4B;
+  --color-accent-rose: #C97A7E;
+}
+
+/* Organic textures, polaroid frames, sticky notes & torn paper utilities */
+@layer utilities {
+  .bg-paper-texture {
+    background-color: var(--color-paper);
+    background-image: radial-gradient(#d9c7a3 0.75px, transparent 0.75px), radial-gradient(#d9c7a3 0.75px, #faf6ed 0.75px);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+  }
+
+  .paper-shadow {
+    box-shadow: 0 4px 6px -1px rgba(44, 38, 35, 0.07), 0 2px 4px -2px rgba(44, 38, 35, 0.05), 0 10px 15px -3px rgba(44, 38, 35, 0.08);
+  }
+
+  .paper-shadow-lg {
+    box-shadow: 0 14px 28px -5px rgba(44, 38, 35, 0.15), 0 10px 10px -5px rgba(44, 38, 35, 0.06);
+  }
+
+  .polaroid-shadow {
+    box-shadow: 0 10px 20px -3px rgba(44, 38, 35, 0.12), 0 4px 6px -2px rgba(44, 38, 35, 0.05), 0 0 0 1px rgba(44, 38, 35, 0.06);
+  }
+
+  .polaroid-shadow-hover {
+    box-shadow: 0 20px 30px -5px rgba(44, 38, 35, 0.2), 0 10px 10px -5px rgba(44, 38, 35, 0.08), 0 0 0 1px rgba(44, 38, 35, 0.1);
+  }
+
+  .sticky-shadow {
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .sticky-shadow-drag {
+    box-shadow: 5px 12px 20px rgba(0, 0, 0, 0.22), 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .texture-kraft {
+    background-color: #dfcdb0;
+    background-image: repeating-linear-gradient(45deg, rgba(140, 115, 85, 0.05) 0px, rgba(140, 115, 85, 0.05) 2px, transparent 2px, transparent 4px);
+  }
+
+  .texture-linen {
+    background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(0deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  .texture-leather {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.08) 15%, transparent 16%), radial-gradient(rgba(0, 0, 0, 0.08) 15%, transparent 16%);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+  }
+
+  .texture-dots {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+
+  .texture-lined {
+    background-image: repeating-linear-gradient(transparent, transparent 27px, #e5dccb 28px);
+    line-height: 28px;
+  }
+
+  .washi-tape {
+    position: relative;
+  }
+  .washi-tape::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 80px;
+    height: 22px;
+    background-color: rgba(247, 209, 213, 0.85);
+    backdrop-filter: blur(1px);
+    border-left: 2px dashed rgba(200, 109, 81, 0.4);
+    border-right: 2px dashed rgba(200, 109, 81, 0.4);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    z-index: 10;
+  }
+
+  .album-spine {
+    box-shadow: inset 8px 0 12px -4px rgba(0, 0, 0, 0.18), inset -2px 0 4px rgba(255, 255, 255, 0.2);
+  }
+
+  .torn-edge-top {
+    clip-path: polygon(
+      0% 4px, 5% 0px, 10% 3px, 15% 1px, 20% 4px, 25% 0px, 30% 3px, 35% 1px, 40% 4px, 
+      45% 0px, 50% 3px, 55% 1px, 60% 4px, 65% 0px, 70% 3px, 75% 1px, 80% 4px, 85% 0px, 
+      90% 3px, 95% 1px, 100% 4px, 100% 100%, 0% 100%
+    );
+  }
+
+  /* Realistic dog-ear / corner fold on bottom-right of sticky note */
+  .sticky-fold {
+    position: relative;
+  }
+  .sticky-fold::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 12px 12px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.15) transparent;
+  }
+}
