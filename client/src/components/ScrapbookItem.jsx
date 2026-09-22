@@ -72,14 +72,14 @@ export const ScrapbookItem = ({
       >
         <WashiTape corner={tapeCorner} color={tapeColor} />
 
-        {/* Action controls */}
+        {/* Action controls - always visible on mobile, hover on desktop */}
         <div
-          className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-40"
+          className="absolute top-2 right-2 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-40 bg-white/70 sm:bg-transparent backdrop-blur-xs sm:backdrop-blur-none p-1 sm:p-0 rounded-lg shadow-xs sm:shadow-none"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => onOpenComments(item)}
-            className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+            className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
             title="Comments & notes"
           >
             <MessageCircle className="w-3.5 h-3.5" />
@@ -98,7 +98,7 @@ export const ScrapbookItem = ({
             <>
               <button
                 onClick={() => onEdit(item)}
-                className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+                className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
                 title="Edit caption"
               >
                 <Edit className="w-3.5 h-3.5" />
@@ -197,13 +197,14 @@ export const ScrapbookItem = ({
       >
         <WashiTape corner={tapeCorner} color={tapeColor} />
 
+        {/* Action controls - always visible on mobile, hover on desktop */}
         <div
-          className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-40"
+          className="absolute top-2 right-2 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-40 bg-white/70 sm:bg-transparent backdrop-blur-xs sm:backdrop-blur-none p-1 sm:p-0 rounded-lg shadow-xs sm:shadow-none"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => onOpenComments(item)}
-            className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+            className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
             title="Comments & notes"
           >
             <MessageCircle className="w-3.5 h-3.5" />
@@ -222,7 +223,7 @@ export const ScrapbookItem = ({
             <>
               <button
                 onClick={() => onEdit(item)}
-                className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+                className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
                 title="Edit caption"
               >
                 <Edit className="w-3.5 h-3.5" />
@@ -310,13 +311,14 @@ export const ScrapbookItem = ({
     >
       <WashiTape corner={tapeCorner} color={tapeColor} />
 
+      {/* Action controls - always visible on mobile, hover on desktop */}
       <div
-        className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-40"
+        className="absolute top-2 right-2 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-40 bg-white/70 sm:bg-transparent backdrop-blur-xs sm:backdrop-blur-none p-1 sm:p-0 rounded-lg shadow-xs sm:shadow-none"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => onOpenComments(item)}
-          className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+          className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
           title="Comments & notes"
         >
           <MessageCircle className="w-3.5 h-3.5" />
@@ -335,7 +337,7 @@ export const ScrapbookItem = ({
           <>
             <button
               onClick={() => onEdit(item)}
-              className="p-1.5 bg-white/90 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer"
+              className="p-1.5 bg-white/95 hover:bg-white text-ink rounded-md shadow-xs text-xs cursor-pointer border border-black/10 sm:border-0"
               title="Edit note"
             >
               <Edit className="w-3.5 h-3.5" />

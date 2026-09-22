@@ -119,17 +119,17 @@ export const StickyNote = ({
       {/* Top glue strip highlight */}
       <div className="absolute top-0 left-0 right-0 h-2 bg-black/5 rounded-t-xs pointer-events-none" />
 
-      {/* Delete button on hover */}
+      {/* Delete button - always visible on mobile, hover on desktop */}
       {isOwner && !isEditing && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(note._id);
           }}
-          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover/sticky:opacity-100 transition-opacity shadow-xs text-[10px] z-30 cursor-pointer"
+          className="absolute -top-2.5 -right-2.5 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover/sticky:opacity-100 transition-opacity shadow-md text-[11px] z-30 cursor-pointer"
           title="Delete sticky note"
         >
-          <X className="w-3 h-3" />
+          <X className="w-3.5 h-3.5 stroke-[2.5]" />
         </button>
       )}
 

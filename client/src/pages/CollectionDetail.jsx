@@ -356,20 +356,20 @@ export const CollectionDetail = () => {
       <div className="min-h-screen bg-paper bg-paper-texture p-4 sm:p-6 md:p-10 flex flex-col">
         <div className="max-w-6xl w-full mx-auto flex-1 flex flex-col">
           {/* Navigation Bar */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 text-sm font-medium text-ink-muted hover:text-ink transition-colors group"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted hover:text-ink transition-colors group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to Dashboard</span>
+              <span>Back</span>
             </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {/* Activity Log Button */}
               <button
                 onClick={() => setIsActivityOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-white text-ink border border-kraft/80 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 bg-white/90 hover:bg-white text-ink border border-kraft/80 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                 title="View album activity feed"
               >
                 <Activity className="w-3.5 h-3.5 text-accent-sage" />
@@ -379,7 +379,7 @@ export const CollectionDetail = () => {
               {isAdmin && (
                 <button
                   onClick={() => setIsShareModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-white text-ink border border-kraft/80 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 bg-white/90 hover:bg-white text-ink border border-kraft/80 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                   title="Share album & manage collaborators"
                 >
                   <Share2 className="w-3.5 h-3.5 text-accent-terracotta" />
@@ -390,17 +390,18 @@ export const CollectionDetail = () => {
               {isAdmin && (
                 <button
                   onClick={() => setIsEditModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 hover:bg-white text-ink border border-kraft/70 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 bg-white/80 hover:bg-white text-ink border border-kraft/70 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                 >
                   <Edit className="w-3.5 h-3.5 text-ink-muted" />
-                  <span>Edit Style</span>
+                  <span className="hidden xs:inline">Edit Style</span>
+                  <span className="xs:hidden">Style</span>
                 </button>
               )}
 
               {isOwner && (
                 <button
                   onClick={handleDeleteCollection}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete</span>
@@ -409,7 +410,7 @@ export const CollectionDetail = () => {
 
               <button
                 onClick={logout}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 hover:bg-red-50 text-ink-muted hover:text-red-600 border border-kraft/70 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 bg-white/80 hover:bg-red-50 text-ink-muted hover:text-red-600 border border-kraft/70 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                 title="Sign Out"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -650,6 +651,13 @@ export const CollectionDetail = () => {
           isOpen={Boolean(selectedLightboxItem)}
           item={selectedLightboxItem}
           onClose={() => setSelectedLightboxItem(null)}
+          onEdit={handleStartEditItem}
+          onDelete={handleDeleteItem}
+          isOwner={
+            isAdmin ||
+            selectedLightboxItem?.addedBy?._id === user?._id ||
+            selectedLightboxItem?.addedBy === user?._id
+          }
         />
 
         {/* Edit Item Caption Modal */}

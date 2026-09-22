@@ -1,25 +1,60 @@
 import React from 'react';
 import { X, Feather, Sparkles } from './Icons';
 
-export const LightboxModal = ({ item, isOpen, onClose }) => {
+export const LightboxModal = ({ item, isOpen, onClose, onEdit, onDelete, isOwner }) => {
   if (!isOpen || !item) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/80 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl w-full bg-paper border border-kraft rounded-3xl overflow-hidden paper-shadow-lg flex flex-col max-h-[90vh]"
+        className="relative max-w-4xl w-full bg-paper border border-kraft rounded-2xl sm:rounded-3xl overflow-hidden paper-shadow-lg flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-ink/70 hover:bg-ink text-paper transition-colors cursor-pointer shadow-md"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Top Control Bar with Edit, Delete & Close */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-2">
+          {isOwner && onEdit && (
+            <button
+              onClick={() => {
+                onClose();
+                onEdit(item);
+              }}
+              className="p-2 rounded-full bg-white/90 hover:bg-white text-ink shadow-md transition-all cursor-pointer"
+              title="Edit caption or text"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </button>
+          )}
+
+          {isOwner && onDelete && (
+            <button
+              onClick={() => {
+                onClose();
+                onDelete(item._id);
+              }}
+              className="p-2 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md transition-all cursor-pointer"
+              title="Delete memory"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full bg-ink/80 hover:bg-ink text-paper transition-colors cursor-pointer shadow-md"
+            title="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col items-center">
