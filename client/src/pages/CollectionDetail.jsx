@@ -20,6 +20,7 @@ import {
   Share2,
   Activity,
   Camera,
+  LogOut,
 } from '../components/Icons';
 import { CollectionModal } from '../components/CollectionModal';
 import { UploadModal } from '../components/UploadModal';
@@ -48,7 +49,7 @@ const TEXTURE_CLASSES = {
 export const CollectionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [collection, setCollection] = useState(null);
   const [items, setItems] = useState([]);
@@ -405,6 +406,15 @@ export const CollectionDetail = () => {
                   <span>Delete</span>
                 </button>
               )}
+
+              <button
+                onClick={logout}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 hover:bg-red-50 text-ink-muted hover:text-red-600 border border-kraft/70 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
             </div>
           </div>
 

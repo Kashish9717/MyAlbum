@@ -196,10 +196,11 @@ export const Dashboard = () => {
 
             <button
               onClick={logout}
-              className="p-2 text-ink-muted hover:text-accent-terracotta hover:bg-paper-dark/60 rounded-lg transition-colors cursor-pointer"
-              title="Sign Out"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-kraft/60 bg-white/80 hover:bg-red-50 text-ink-muted hover:text-red-600 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+              title="Sign Out of your account"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
             </button>
           </div>
         </div>
